@@ -1,89 +1,51 @@
-import pygame, sys
-from pygame.locals import *
-import gamePieces
+initialBoard = [['bR','bN', 'bB', 'bQ', 'bK','bB','bN','bR'],
+            ['bp', 'bp','bp', 'bp','bp','bp','bp','bp'],
+            ['N', 'N', 'N', 'N','N','N','N','N'],
+            ['N', 'N', 'N', 'N','N','N','N','N'],
+            ['N', 'N', 'N', 'N','N','N','N','N'],
+            ['N', 'N', 'N', 'N','N','N','N','N'],
+            ['wp', 'wp', 'wp', 'wp','wp','wp','wp','wp'],
+            ['wR','wN', 'wB', 'wQ', 'wK','wB','wN','wR']]
 
-# set up the screen
-pygame.init()
-DISPLAYSURF = pygame.display.set_mode(  (800,800))
-pygame.display.set_caption('Chess Game')
+initialUsed = [[1,1,1,1,1,1,1,1],
+                [1,1,1,1,1,1,1,1],
+                [0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0],
+                [0,0,0,0,0,0,0,0],
+                [1,1,1,1,1,1,1,1],
+                [1,1,1,1,1,1,1,1]]
 
-# initialize colors
-GREEN = (85,107,47)
-WHITE = (255,255,240)
+class Game: 
+    def __init__(self, board,used):
+        self.b = board
+        self.u = used
 
-# set up board squares
-x=0
-y =0 
-for i in range(8):
-    for j in range(8):
-        if i % 2 == 0:
-            if(j %2 ==0):
-                pygame.draw.rect(DISPLAYSURF, WHITE, (x, y, 100, 100))
-            else:
-                pygame.draw.rect(DISPLAYSURF, GREEN, (x, y, 100, 100))
-        else:
-            if(j %2 == 0):
-                pygame.draw.rect(DISPLAYSURF, GREEN, (x, y, 100, 100))
-            else:
-                pygame.draw.rect(DISPLAYSURF, WHITE, (x, y, 100, 100))
-        y+= 100
-    x+= 100
-    y=0
- 
-currSquare = [(0),(0),(0)]
-preSquare = [(0),(0),(1)]
-
-
-
-def highlight():
-
-    # find the top left coordinate of the square the cursor is hovering over
-    x = pygame.mouse.get_pos()[0] 
-    y = pygame.mouse.get_pos()[1]
-    if x < 100: x = 0
-    else: x = x - (x % 100) 
-    if y < 100: y = 0
-    else: y = y - (y % 100) 
+    def updateP(cls,coords):
+        cls.b[coords[3]][coords[2]] = cls.b[coords[1]][coords[0]]
+        cls.b[coords[1]][coords[0]] = 'N'
+        
     
-    # highlight square
-    color =  DISPLAYSURF.get_at((x, y))[:3]
-    if color == WHITE:
-        pygame.draw.rect(DISPLAYSURF, (225,225,225) , (x, y, 100, 100))
-        currSquare[2] = 1
-    if color == GREEN:
-        pygame.draw.rect(DISPLAYSURF, (60,78,33), (x, y, 100, 100))
-        currSquare[2] = 0
 
+def updateBoardPosition(SIZE,x,y,newX,newY):
+    # left coordinate position of square pressed
+    if x < SIZE: x = 0
+    else: x = x - (x % SIZE) 
+    if y < SIZE: y = 0
+    else: y = y - (y % SIZE)
 
-    currSquare[0] = x
-    currSquare[1] = y
+    # left coordinate position of square released on 
+    if newX < SIZE: newX = 0
+    else: newX = newX - (newX % SIZE) 
+    if newY < SIZE: newY = 0
+    else: newY = newY - (newY % SIZE)
 
-    # revert square to normal when cursor leaves it
-    if currSquare[0] != preSquare[0] or currSquare[1] != preSquare[1]:
-        if preSquare[2] == 1:
-            pygame.draw.rect(DISPLAYSURF, WHITE , (preSquare[0], preSquare[1], 100, 100))
-        if preSquare[2] == 0:
-            pygame.draw.rect(DISPLAYSURF, GREEN, (preSquare[0], preSquare[1], 100, 100))
-        preSquare[0] = x
-        preSquare[1] = y
-        preSquare[2] = currSquare[2]
-        
+    # Find array index location
+    fX = int(x/SIZE)
+    fY = int(y/SIZE)
 
+    sX = int(newX/SIZE)
+    sY = int(newY/SIZE)
 
-
-
-
-
-# game loop
-while True:
-    for event in pygame.event .get():
-
-        # update highlighted squares from cursor location
-        highlight()
-       
-        
-        
-        if(event.type == QUIT):
-            pygame.quit()
-            sys.exit()
-        pygame.display.update()
+    return fX,fY,sX,sY
+    
